@@ -1,0 +1,68 @@
+@inherits LayoutComponentBase
+
+<div class="app-container">
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar-desktop">
+        <div class="sidebar-header">
+            <span class="brand-logo">🩺</span>
+            <span class="brand-name">DentalCare</span>
+        </div>
+        <nav class="sidebar-nav">
+            <NavMenu />
+        </nav>
+    </aside>
+    <!-- Mobile Sidebar Drawer -->
+    @if (_isMobileMenuOpen)
+    {
+        <div class="sidebar-mobile-overlay" @onclick="ToggleMobileMenu">
+            <aside class="sidebar-mobile" @onclick:stopPropagation="true">
+                <div class="sidebar-header">
+                    <span class="brand-logo">🩺</span>
+                    <span class="brand-name">DentalCare</span>
+                    <button class="sidebar-close-btn" @onclick="ToggleMobileMenu">✕</button>
+                </div>
+                <nav class="sidebar-nav">
+                    <NavMenu />
+                </nav>
+            </aside>
+        </div>
+    }
+    <!-- Main Content Area -->
+    <div class="main-area">
+        <!-- Top Header -->
+        <header class="top-header">
+            <button class="mobile-menu-btn" @onclick="ToggleMobileMenu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="page-title-section">
+                <span class="hospital-tag">Dental Clinic</span>
+            </div>
+            <div class="user-profile-wrapper">
+                <AuthorizeView>
+                    <Authorized>
+                        <span class="user-avatar">👤</span>
+                        <span class="user-name">@context.User.Identity?.Name</span>
+                        <button class="logout-btn" @onclick="HandleLogout">Logout</button>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="login" class="login-btn">Login</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </header>
+
+        <!-- Main Body Content -->
+        <main class="content-body">
+            @Body
+        </main>
+    </div>
+
+    <!-- Mobile Navigation (Bottom Tab Bar) -->
+    <nav class="mobile-bottom-nav">
+        <NavMenu IsMobile="true" />
+    </nav>
+</div>

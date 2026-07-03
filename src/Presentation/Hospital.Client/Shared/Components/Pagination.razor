@@ -1,0 +1,91 @@
+@namespace Hospital.Client.Shared.Components
+
+<div class="pagination-container">
+    <div class="pagination-pagesize">
+        <label for="page-size-select">Rows per page:</label>
+        <select id="page-size-select" class="page-size-select" value="@PageSize" @onchange="OnPageSizeChanged">
+            @foreach (var option in PageSizeOptions)
+            {
+                <option value="@option">@option</option>
+            }
+        </select>
+    </div>
+    <div class="pagination-info">
+        Showing <span>@StartEntry</span> to <span>@EndEntry</span> of <span>@TotalCount</span> entries
+    </div>
+    <div class="pagination-buttons">
+        <button class="btn-page" disabled="@(!HasPreviousPage)" @onclick="() => GoToPage(CurrentPage - 1)" title="Previous Page">
+            &laquo; <span class="d-none d-sm-inline">Prev</span>
+        </button>
+        @{
+            int startPage = Math.Max(1, CurrentPage - 1);
+            int endPage = Math.Min(TotalPages, CurrentPage + 1);
+
+            // Ensure we show first page and ellipsis if needed
+            if (startPage > 1)
+            {
+                <button class="btn-page" @onclick="() => GoToPage(1)">1</button>
+                if (startPage > 2)
+                {
+                    <span class="pagination-ellipsis">...</span>
+                }
+            }
+
+            for (int p = startPage; p <= endPage; p++)
+            {
+                var pageNumber = p;
+                <button class="btn-page @(pageNumber == CurrentPage ? "active" : "")" @onclick="() => GoToPage(pageNumber)">
+                    @pageNumber
+                </button>
+            }
+
+            // Ensure we show last page and ellipsis if needed
+            if (endPage < TotalPages)
+            {
+                if (endPage < TotalPages - 1)
+                {
+                    <span class="pagination-ellipsis">...</span>
+                }
+                <button class="btn-page" @onclick="() => GoToPage(TotalPages)">@TotalPages</button>
+            }
+        }
+        <button class="btn-page" disabled="@(!HasNextPage)" @onclick="() => GoToPage(CurrentPage + 1)" title="Next Page">
+            <span class="d-none d-sm-inline">Next</span> &raquo;
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    [Parameter]
+    public int PageSize { get; set; } = 10;
+
+    [Parameter]
+    public int TotalCount { get; set; }
+
+    [Parameter]
+    public List<int> PageSizeOptions { get; set; } = new() { 5, 10, 25, 50, 100 };
+
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<ChangeEventArgs> OnPageSizeChanged { get; set; }
+
+    private int TotalPages => (int)Math.Ceiling((double)TotalCount / PageSize);
+    private bool HasPreviousPage => CurrentPage > 1;
+    private bool HasNextPage => CurrentPage < TotalPages;
+
+    private int StartEntry => TotalCount == 0 ? 0 : ((CurrentPage - 1) * PageSize) + 1;
+    private int EndEntry => Math.Min(CurrentPage * PageSize, TotalCount);
+
+    private async Task GoToPage(int page)
+    {
+        if (page >= 1 && page <= TotalPages && page != CurrentPage)
+        {
+            await OnPageChanged.InvokeAsync(page);
+        }
+    }
+}

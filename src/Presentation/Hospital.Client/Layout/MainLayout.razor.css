@@ -1,0 +1,3 @@
+/* All app-shell layout styles moved to wwwroot/css/app.css (global).
+   Blazor CSS isolation scopes :root incorrectly — all CSS variables
+   and global overrides MUST live in the global app.css file. */

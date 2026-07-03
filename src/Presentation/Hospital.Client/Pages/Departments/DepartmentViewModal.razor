@@ -1,0 +1,106 @@
+@namespace Hospital.Client.Pages.Departments
+@using Hospital.Shared.DTOs.Departments
+
+@if (Show && Department != null)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal-box wide" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>🏢 Department Details: @Department.Name</h3>
+                <button class="modal-close" @onclick="CloseModal">✕</button>
+            </div>
+            
+            <div class="modal-body">
+                @if (IsLoading)
+                {
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Loading details...</p>
+                    </div>
+                }
+                else if (Details != null)
+                {
+                    <div class="details-layout">
+                        <!-- Left Info -->
+                        <div class="info-section">
+                            <div class="detail-group">
+                                <label>Name</label>
+                                <div class="detail-value text-highlight">@Details.Name</div>
+                            </div>
+                            <div class="detail-group">
+                                <label>Description</label>
+                                <div class="detail-value text-muted">
+                                    @(string.IsNullOrEmpty(Details.Description) ? "No description provided." : Details.Description)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Tabs/Lists -->
+                        <div class="sublists-section">
+                            <div class="sublist-card">
+                                <h4>👨‍⚕️ Doctors (@Details.Doctors.Count)</h4>
+                                <div class="scroll-list">
+                                    @if (Details.Doctors == null || !Details.Doctors.Any())
+                                    {
+                                        <p class="empty-text">No doctors assigned to this department.</p>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var doc in Details.Doctors)
+                                        {
+                                            <div class="list-item">
+                                                <div class="item-avatar">@doc.Name[0].ToString().ToUpper()</div>
+                                                <div class="item-details">
+                                                    <span class="item-title">@doc.Name</span>
+                                                    <span class="item-subtitle">@doc.Specialization</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="sublist-card">
+                                <h4>📋 Treatment Terms (@Details.Terms.Count)</h4>
+                                <div class="scroll-list">
+                                    @if (Details.Terms == null || !Details.Terms.Any())
+                                    {
+                                        <p class="empty-text">No treatment terms defined.</p>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var term in Details.Terms)
+                                        {
+                                            <div class="list-item">
+                                                <div class="item-icon">⚡</div>
+                                                <div class="item-details">
+                                                    <span class="item-title">@term.Name</span>
+                                                    <span class="item-subtitle">Cost: ৳@term.BaseCost.ToString("N2")</span>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-ghost" @onclick="CloseModal">Close</button>
+                <AuthorizeView Policy="DepartmentEdit">
+                    <Authorized>
+                        <button class="btn btn-primary" @onclick="TriggerEdit">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px; display: inline-block; vertical-align: middle;">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            <span>Edit Department</span>
+                        </button>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </div>
+}

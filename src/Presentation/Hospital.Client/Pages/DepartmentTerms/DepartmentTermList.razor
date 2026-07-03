@@ -1,0 +1,166 @@
+@page "/department-terms"
+@attribute [Authorize(Policy = "DepartmentTermView")]
+@layout MainLayout
+
+<div class="page-wrapper">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-icon">📋</div>
+            <div>
+                <h1 class="page-title">Treatment Terms</h1>
+                <p class="page-subtitle">Manage treatment types and their base costs</p>
+            </div>
+        </div>
+        <div class="page-header-right">
+            <AuthorizeView Policy="DepartmentTermCreate">
+                <Authorized>
+                    <button class="btn btn-primary" @onclick="OpenAddModal">
+                        <span>＋</span> Add Treatment Term
+                    </button>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    @if (!string.IsNullOrEmpty(SuccessMessage))
+    {
+        <div class="alert alert-success" @onclick="() => SuccessMessage = null">
+            <span class="alert-icon">✓</span> @SuccessMessage
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger" @onclick="() => ErrorMessage = null">
+            <span class="alert-icon">✕</span> @ErrorMessage
+        </div>
+    }
+
+    <!-- Toolbar: Search + Filter -->
+    <div class="toolbar-row">
+        <div class="filter-group">
+            <div class="stats-chip">
+                <span class="stats-number">@(Terms?.TotalCount ?? 0)</span>
+                <span class="stats-label">Total Terms</span>
+            </div>
+            <select class="filter-select" @bind="FilterDepartmentId" @bind:after="OnFilterChanged">
+                <option value="0">All Departments</option>
+                @if (AllDepartments != null)
+                {
+                    @foreach (var dept in AllDepartments)
+                    {
+                        <option value="@dept.Id">@dept.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="search-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input class="search-input" type="text" placeholder="Search treatment terms..."
+                   @bind-value="SearchTerm"
+                   @bind-value:event="oninput"
+                   @onkeyup="OnSearchKeyUp" />
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        @if (IsLoading)
+        {
+            <div class="loading-overlay">
+                <div class="spinner-ring"></div>
+                <p>Loading treatment terms...</p>
+            </div>
+        }
+        else if (Terms == null || Terms.Items.Count == 0)
+        {
+            <div class="empty-state">
+                <span class="empty-icon">📋</span>
+                <h3>No Treatment Terms Found</h3>
+                <p>@(string.IsNullOrEmpty(SearchTerm) ? "Start by adding your first treatment term." : $"No results for \"{SearchTerm}\"")</p>
+                <AuthorizeView Policy="DepartmentTermCreate">
+                    <Authorized>
+                        <button class="btn btn-primary" @onclick="OpenAddModal">＋ Add First Term</button>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Treatment Name</th>
+                            <th>Department</th>
+                            <th>Description</th>
+                            <th class="text-right">Base Cost</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{int rowNum = (CurrentPage - 1) * PageSize;}
+                        @foreach (var term in Terms.Items)
+                        {
+                            rowNum++;
+                            <tr>
+                                <td class="row-num">@rowNum</td>
+                                <td>
+                                    <div class="term-name-cell">
+                                        <div class="term-avatar">💉</div>
+                                        <span class="term-name">@term.Name</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-slate">@term.DepartmentName</span>
+                                </td>
+                                <td class="text-muted">@(string.IsNullOrEmpty(term.Description) ? "—" : term.Description)</td>
+                                <td class="text-right">
+                                    <span class="cost-chip">৳ @term.BaseCost.ToString("N0")</span>
+                                </td>
+                                 <td class="text-right">
+                                    <div class="action-buttons-container">
+                                        <button class="btn-action btn-view" @onclick="() => OpenViewModal(term)" title="View Details">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        </button>
+                                        <AuthorizeView Policy="DepartmentTermEdit">
+                                            <Authorized>
+                                                <button class="btn-action btn-edit" @onclick="() => OpenEditModal(term)" title="Edit">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                </button>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                        <AuthorizeView Policy="DepartmentTermDelete">
+                                            <Authorized>
+                                                <button class="btn-action btn-delete" @onclick="() => ConfirmDelete(term.Id, term.Name)" title="Delete">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>
+                                                </button>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <Pagination CurrentPage="@CurrentPage"
+                        PageSize="@PageSize"
+                        TotalCount="@(Terms?.TotalCount ?? 0)"
+                        OnPageChanged="ChangePage"
+                        OnPageSizeChanged="OnPageSizeChanged" />
+        }
+    </div>
+</div>
+
+<!-- Modal Components -->
+<DepartmentTermCreateModal Show="ShowCreateModal" Departments="AllDepartments" OnClose="CloseCreateModal" OnSuccess="OnCreateSuccess" />
+<DepartmentTermEditModal Show="ShowEditModal" Term="SelectedTermForEdit" Departments="AllDepartments" OnClose="CloseEditModal" OnSuccess="OnEditSuccess" />
+<DepartmentTermViewModal Show="ShowViewModal" Term="SelectedTermForView" OnClose="CloseViewModal" OnEditRequested="OnEditRequestedFromView" />
+

@@ -1,0 +1,240 @@
+@page "/"
+@layout PublicLayout
+@attribute [AllowAnonymous]
+@using Hospital.Shared.DTOs.LandingPage
+
+<div class="landing-page">
+    @if (Sections == null)
+    {
+        <div class="loader-container">
+            <div class="loader-spinner"></div>
+            <p>Loading clinic information...</p>
+        </div>
+    }
+    else
+    {
+        <!-- Dynamic Sections -->
+        @foreach (var item in Sections.Where(s => s.IsVisible).OrderBy(s => s.DisplayOrder).Select((s, i) => new { Section = s, Index = i }))
+        {
+            var section = item.Section;
+            var blockIndex = item.Index;
+
+            @if (section.SectionType == "Hero")
+            {
+                <section class="section-hero">
+                    <div class="hero-content">
+                        <h1>@section.Title</h1>
+                        <p class="hero-subtitle">@section.Content</p>
+                        <div class="hero-actions">
+                            <a href="login" class="btn btn-hero">Make Appointment</a>
+                            <a href="#about" class="btn btn-hero-outline">Learn More</a>
+                        </div>
+                    </div>
+                    <div class="hero-image-wrapper">
+                        <div class="image-frame">
+                            <img src="@(string.IsNullOrEmpty(section.ImageUrl) ? "images/dental_banner.png" : section.ImageUrl)" alt="Clinic Banner" class="hero-img" />
+                        </div>
+                    </div>
+                </section>
+            }
+            else if (section.SectionType == "DoctorProfile")
+            {
+                <section class="section-doctor" id="doctor">
+                    <div class="doctor-container">
+                        <div class="doctor-image-side">
+                            <div class="doctor-frame">
+                                <img src="@(string.IsNullOrEmpty(section.ImageUrl) ? "images/doctor_mamun.jpg" : section.ImageUrl)" alt="Dr. Abdullah Al Mamun" class="doctor-portrait" />
+                                <div class="experience-badge">
+                                    <span class="exp-num">10+</span>
+                                    <span class="exp-text">Years Exp</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="doctor-info-side">
+                            <div class="badge-tag">Expert Dentist</div>
+                            <h2>@section.Title</h2>
+                            <div class="doctor-details-list">
+                                @{
+                                    var lines = section.Content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                                    if (lines.Length > 0)
+                                    {
+                                        <h3 class="doc-name">@lines[0]</h3>
+                                    }
+                                    for (int i = 1; i < lines.Length; i++)
+                                    {
+                                        var line = lines[i];
+                                        if (line.Contains("Contact:") || line.Contains("Phone:"))
+                                        {
+                                            <div class="doc-contact-highlight">
+                                                <span class="contact-icon">📞</span>
+                                                <span class="contact-text">@line</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <p class="doc-detail-item">
+                                                <span class="check-icon">✓</span>
+                                                @line
+                                            </p>
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+            else if (section.SectionType == "Treatments")
+            {
+                <section class="section-treatments" id="services">
+                    <div class="section-header-center">
+                        <div class="badge-tag">Our Care</div>
+                        <h2>@section.Title</h2>
+                        <div class="decor-line"></div>
+                    </div>
+                    <div class="treatments-grid">
+                        @{
+                            var treatments = GetTreatmentsList(section.Content);
+                            int index = 0;
+                            string[] icons = { "🦷", "✨", "💎", "🛡️", "🔬", "🩺" };
+                            foreach (var treatment in treatments)
+                            {
+                                var icon = icons[index % icons.Length];
+                                index++;
+                                <div class="treatment-card">
+                                    <div class="treatment-icon">@icon</div>
+                                    <h3>@treatment.Title</h3>
+                                    <p>@treatment.Desc</p>
+                                </div>
+                            }
+                        }
+                    </div>
+                </section>
+            }
+            else if (section.SectionType == "Video")
+            {
+                <section class="section-video">
+                    <div class="video-container">
+                        <div class="video-info">
+                            <div class="badge-tag">Advanced Facility</div>
+                            <h2>@section.Title</h2>
+                            <p>@section.Content</p>
+                        </div>
+                        <div class="video-player-wrapper">
+                            @if (!string.IsNullOrEmpty(section.ImageUrl))
+                            {
+                                @if (section.ImageUrl.StartsWith("data:video/") || section.ImageUrl.EndsWith(".mp4") || section.ImageUrl.EndsWith(".webm"))
+                                {
+                                    <div class="responsive-video-local">
+                                        <video src="@section.ImageUrl" controls class="local-video-player">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="responsive-video">
+                                        <iframe src="@section.ImageUrl" 
+                                                title="Clinic Presentation Video" 
+                                                frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="video-placeholder">
+                                    <span class="play-icon">▶</span>
+                                    <p>No video URL configured</p>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </section>
+            }
+            else if (section.SectionType == "About")
+            {
+                <section class="section-about" id="about">
+                    <div class="about-wrapper">
+                        <div class="about-info-side">
+                            <div class="badge-tag">About Us</div>
+                            <h2>@section.Title</h2>
+                            <p class="about-desc">@section.Content</p>
+                            <div class="about-highlights">
+                                <div class="highlight-item">
+                                    <span class="hl-icon">💯</span>
+                                    <span class="hl-text">Safe Sterilization</span>
+                                </div>
+                                <div class="highlight-item">
+                                    <span class="hl-icon">🛋️</span>
+                                    <span class="hl-text">Comfortable Lounge</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="about-image-side">
+                            @if (!string.IsNullOrEmpty(section.ImageUrl))
+                            {
+                                <img src="@section.ImageUrl" alt="About Clinic" class="about-img" />
+                            }
+                            else
+                            {
+                                <div class="about-art-placeholder">
+                                    <div class="art-circle"></div>
+                                    <span class="art-emoji">🏢</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </section>
+            }
+            else if (section.SectionType == "InfoCard")
+            {
+                <section class="section-info">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="card-icon">⏰</div>
+                            <h4>@section.Title</h4>
+                            <div class="card-content">
+                                @foreach (var line in section.Content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <p>@line</p>
+                                }
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <div class="card-icon">📍</div>
+                            <h4>Chamber Address</h4>
+                            <div class="card-content">
+                                <p>146/A/2, Road No: 02</p>
+                                <p>Shyamoli, Dhaka-1207</p>
+                                <p class="contact-num">Call: +8801737-591865</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            }
+            else
+            {
+                var isEven = blockIndex % 2 == 0;
+                <section class="section-general @(isEven ? "general-even" : "general-odd") @(string.IsNullOrEmpty(section.ImageUrl) ? "no-image" : "")">
+                    <div class="general-wrapper">
+                        <div class="general-info-side">
+                            <div class="badge-tag">Clinic Highlight</div>
+                            <h2>@section.Title</h2>
+                            <p class="general-desc">@section.Content</p>
+                        </div>
+                        @if (!string.IsNullOrEmpty(section.ImageUrl))
+                        {
+                            <div class="general-image-side">
+                                <img src="@section.ImageUrl" alt="@section.Title" class="general-img" />
+                            </div>
+                        }
+                    </div>
+                </section>
+            }
+        }
+    }
+</div>

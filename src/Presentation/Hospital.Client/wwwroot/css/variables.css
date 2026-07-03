@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ============================================================
+   HOSPITAL MANAGEMENT – GLOBAL CSS VARIABLES
+   ============================================================ */
+
+:root {
+    --font-heading: 'Outfit', system-ui, sans-serif;
+
+    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+
+    /* Brand */
+    --primary: #0d9488;
+    --primary-dark: #0f766e;
+    --primary-glow: rgba(13, 148, 136, 0.3);
+
+    /* Sidebar — must be global for margin-left to work */
+    --sidebar-width: 260px;
+    --header-h: 66px;
+    --mobile-nav-h: 62px;
+
+    /* Colors */
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text-main: #0f172a;
+    --text-sub: #64748b;
+
+    /* Shadows */
+    --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.1);
+}

@@ -1,0 +1,110 @@
+@if (IsMobile)
+{
+    <!-- Mobile Bottom Tab Bar -->
+    <div class="mobile-tabs-container">
+        <NavLink class="mobile-tab-link" href="" Match="NavLinkMatch.All">
+            <span class="tab-icon">🏠</span>
+            <span class="tab-label">Home</span>
+        </NavLink>
+
+        <AuthorizeView Policy="DefinitionsMenu">
+            <Authorized>
+                <NavLink class="mobile-tab-link" href="departments">
+                     <span class="tab-icon">🏢</span>
+                     <span class="tab-label">Depts</span>
+                </NavLink>
+                <NavLink class="mobile-tab-link" href="department-terms">
+                     <span class="tab-icon">📋</span>
+                     <span class="tab-label">Terms</span>
+                </NavLink>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Policy="OperationsMenu">
+            <Authorized>
+                <NavLink class="mobile-tab-link" href="patients">
+                     <span class="tab-icon">🧑‍🤝‍🧑</span>
+                     <span class="tab-label">Patients</span>
+                </NavLink>
+            </Authorized>
+        </AuthorizeView>
+
+        <NavLink class="mobile-tab-link" href="profile">
+            <span class="tab-icon">👤</span>
+            <span class="tab-label">Profile</span>
+        </NavLink>
+    </div>
+}
+else
+{
+    <!-- Desktop Vertical Navigation -->
+    <div class="desktop-nav-container">
+        <div class="nav-section-title">Main</div>
+        
+        <NavLink class="desktop-nav-link" href="" Match="NavLinkMatch.All">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-text">Home</span>
+        </NavLink>
+
+        <AuthorizeView Policy="DefinitionsMenu">
+            <Authorized>
+                <div class="nav-section-title">Hospital Setup</div>
+
+                <button class="btn-submenu @(IsDefinitionsSubmenuExpanded ? "active" : "")" @onclick="ToggleDefinitionsSubmenu">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">Definitions</span>
+                    <svg class="submenu-arrow @(IsDefinitionsSubmenuExpanded ? "rotated" : "")" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+                @if (IsDefinitionsSubmenuExpanded)
+                {
+                    <div class="submenu-items">
+                        <NavLink class="submenu-link" href="departments">
+                            <span class="nav-icon">🏢</span>
+                            <span>Departments</span>
+                        </NavLink>
+
+                        <NavLink class="submenu-link" href="department-terms">
+                            <span class="nav-icon">📋</span>
+                            <span>Treatment Terms</span>
+                        </NavLink>
+
+                        <NavLink class="submenu-link" href="doctors">
+                            <span class="nav-icon">👨‍⚕️</span>
+                            <span>Doctors</span>
+                        </NavLink>
+                    </div>
+                }
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Policy="OperationsMenu">
+            <Authorized>
+                <div class="nav-section-title">Clinical Operations</div>
+
+                <NavLink class="desktop-nav-link" href="patients">
+                    <span class="nav-icon">🧑‍🤝‍🧑</span>
+                    <span class="nav-text">Patients</span>
+                </NavLink>
+            </Authorized>
+        </AuthorizeView>
+
+        <div class="nav-section-title">Settings</div>
+        
+        <NavLink class="desktop-nav-link" href="profile">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">My Profile</span>
+        </NavLink>
+
+        <AuthorizeView Policy="LandingPageSectionView">
+            <Authorized>
+                <NavLink class="desktop-nav-link" href="cms/landing-page">
+                    <span class="nav-icon">🌐</span>
+                    <span class="nav-text">Landing Page</span>
+                </NavLink>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+}
+

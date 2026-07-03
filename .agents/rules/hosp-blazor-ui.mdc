@@ -1,0 +1,23 @@
+---
+description: Hospital Management System Blazor WASM UI component conventions
+globs: "{src/Presentation/Hospital.Client/**/*.razor,src/Presentation/Hospital.Client/**/*.razor.cs,src/Presentation/Hospital.Client/**/*.razor.css}"
+alwaysApply: false
+---
+
+# Blazor UI Rules
+
+- **File Separation Rule:** Absolutely NO `@code` blocks inside `.razor` files and NO inline CSS styles.
+  - Every component or page must be split into:
+    1. `{ComponentName}.razor` (markup only)
+    2. `{ComponentName}.razor.cs` (code-behind partial class containing logic)
+    3. `{ComponentName}.razor.css` (isolated CSS styling)
+- **Centralized Service Clients:** Never call HTTP APIs directly using `HttpClient` with raw URL strings inside components.
+  - All API calls must be routed through a typed Service Client (e.g., `PatientServiceClient`, `AppointmentServiceClient`) inheriting from `BaseServiceClient`.
+  - Service clients manage endpoint routes, parse responses using the `Result` pattern, and handle common errors (such as unauthorized logout).
+- **Hospital Color Aesthetics:** Use soft, medical-themed clinical colors that are easy on the eyes.
+  - Primary slate blue: `--color-primary` (comforting, professional)
+  - Secondary light teal: `--color-secondary` (clinical, clean)
+  - Neutral backgrounds: soft light gray `#F7F9FC` to prevent eye strain.
+- **Mobile Experience (App Shell):**
+  - Layout must feel like a native mobile app on small screens (fixed bottom navigation bar, fixed top header/back button, card list view layouts instead of horizontal tables).
+- **Split features into separate components:** Index page, CreateModal, EditModal, DetailsModal — each following the file separation rule.

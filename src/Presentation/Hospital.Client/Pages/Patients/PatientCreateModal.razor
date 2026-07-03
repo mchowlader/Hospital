@@ -1,0 +1,85 @@
+@namespace Hospital.Client.Pages.Patients
+
+@if (Show)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal-box wide" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Register New Patient</h3>
+                <button class="modal-close" @onclick="CloseModal">✕</button>
+            </div>
+            <EditForm Model="FormModel" OnValidSubmit="SavePatient">
+                <DataAnnotationsValidator />
+                
+                @if (!string.IsNullOrEmpty(ModalErrorMessage))
+                {
+                    <div class="alert alert-danger">
+                        <span class="alert-icon">✕</span> @ModalErrorMessage
+                    </div>
+                }
+
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name <span class="required">*</span></label>
+                            <InputText class="form-control" @bind-Value="FormModel.FirstName" placeholder="First name" />
+                            <ValidationMessage For="() => FormModel.FirstName" class="validation-msg" />
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name <span class="required">*</span></label>
+                            <InputText class="form-control" @bind-Value="FormModel.LastName" placeholder="Last name" />
+                            <ValidationMessage For="() => FormModel.LastName" class="validation-msg" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Email <span class="required">*</span></label>
+                            <InputText class="form-control" @bind-Value="FormModel.Email" placeholder="patient@example.com" />
+                            <ValidationMessage For="() => FormModel.Email" class="validation-msg" />
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number <span class="required">*</span></label>
+                            <InputText class="form-control" @bind-Value="FormModel.PhoneNumber" placeholder="e.g., 017XXXXXXXX" />
+                            <ValidationMessage For="() => FormModel.PhoneNumber" class="validation-msg" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date of Birth <span class="required">*</span></label>
+                            <InputDate class="form-control" @bind-Value="FormModel.DateOfBirth" />
+                            <ValidationMessage For="() => FormModel.DateOfBirth" class="validation-msg" />
+                        </div>
+                        <div class="form-group">
+                            <label>Gender <span class="required">*</span></label>
+                            <InputSelect class="form-control" @bind-Value="FormModel.Gender">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </InputSelect>
+                            <ValidationMessage For="() => FormModel.Gender" class="validation-msg" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Medical History Summary</label>
+                        <InputTextArea class="form-control text-area" @bind-Value="FormModel.MedicalHistorySummary" rows="3" placeholder="Enter patient's previous medical conditions, allergies, or histories..." />
+                        <ValidationMessage For="() => FormModel.MedicalHistorySummary" class="validation-msg" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" @onclick="CloseModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@IsSaving">
+                        @if (IsSaving) 
+                        { 
+                            <span class="btn-spinner"></span> 
+                            <span>Saving...</span> 
+                        }
+                        else 
+                        { 
+                            <span>Register</span> 
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}

@@ -1,0 +1,223 @@
+/* ============================================================
+   HOSPITAL MANAGEMENT – DESKTOP SCREEN STYLES (min-width: 1025px)
+   ============================================================ */
+
+/* ── SIDEBAR — Clean White Clinical Theme ────────────────── */
+.sidebar-desktop {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    background: #ffffff;
+    border-right: 1px solid #e8edf2;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 2px 0 16px rgba(15, 23, 42, 0.06);
+}
+
+.sidebar-desktop::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, #0d9488 0%, #06b6d4 50%, #0d9488 100%);
+    background-size: 100% 200%;
+    animation: flowDown 4s ease-in-out infinite;
+}
+
+@keyframes flowDown {
+    0%   { background-position: 0% 0%; }
+    50%  { background-position: 0% 100%; }
+    100% { background-position: 0% 0%; }
+}
+
+.sidebar-header {
+    height: var(--header-h);
+    min-height: var(--header-h);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid #f0f4f8;
+    gap: 12px;
+    background: linear-gradient(135deg, #f0fdf9 0%, #ffffff 100%);
+}
+
+.brand-logo {
+    font-size: 28px;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 6px rgba(13,148,136,0.3));
+}
+
+.brand-name {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 17px;
+    letter-spacing: -0.4px;
+    color: #0f766e;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 0;
+}
+
+/* ── MAIN AREA ──────────────────────────────────────────── */
+.main-area {
+    margin-left: var(--sidebar-width);
+}
+
+/* ── SIDEBAR NAV MENU ───────────────────────────────────── */
+.desktop-nav-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 12px;
+}
+
+.nav-section-title {
+    font-family: var(--font-heading);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin: 20px 0 4px 14px;
+    letter-spacing: 1.0px;
+}
+
+.desktop-nav-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    color: #64748b !important;
+    text-decoration: none !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    font-family: var(--font-body) !important;
+    transition: all 0.18s ease !important;
+    position: relative !important;
+    border: 1px solid transparent !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    margin-left: 3px !important;
+}
+
+.desktop-nav-link:hover {
+    background: #f0fdf9 !important;
+    color: #0d9488 !important;
+    border-color: #ccfbf1 !important;
+    text-decoration: none !important;
+}
+
+.desktop-nav-link.active {
+    background: linear-gradient(135deg, #f0fdf9, #e6fdf8) !important;
+    color: #0f766e !important;
+    border-color: #99f6e4 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 8px rgba(13,148,136,0.12) !important;
+}
+
+.desktop-nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: -3px; top: 20%; height: 60%; width: 3px;
+    background: linear-gradient(180deg, #0d9488, #06b6d4);
+    border-radius: 0 3px 3px 0;
+}
+
+.nav-icon {
+    font-size: 17px;
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.nav-text {
+    color: inherit;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── SUBMENU NAVIGATION ──────────────────────────────────── */
+.btn-submenu {
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    padding: 10px 12px !important;
+    color: #64748b !important;
+    border-radius: 10px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    font-family: var(--font-body) !important;
+    transition: all 0.18s ease !important;
+    position: relative !important;
+    border: 1px solid transparent !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    margin-left: 3px !important;
+}
+
+.btn-submenu:hover, .btn-submenu.active {
+    background: #f0fdf9 !important;
+    color: #0d9488 !important;
+    border-color: #ccfbf1 !important;
+}
+
+.submenu-arrow {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+    opacity: 0.6;
+}
+
+.submenu-arrow.rotated {
+    transform: rotate(180deg);
+}
+
+.submenu-items {
+    padding-left: 12px;
+    margin-top: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.submenu-link {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 8px 12px !important;
+    color: #64748b !important;
+    text-decoration: none !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    transition: all 0.15s ease !important;
+}
+
+.submenu-link:hover {
+    background: #f0fdf9 !important;
+    color: #0d9488 !important;
+}
+
+.submenu-link.active {
+    background: linear-gradient(135deg, #f0fdf9, #e6fdf8) !important;
+    color: #0f766e !important;
+    font-weight: 700 !important;
+}

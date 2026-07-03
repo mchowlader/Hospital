@@ -1,0 +1,147 @@
+@using Hospital.Shared.DTOs.LandingPage
+
+@if (Show)
+{
+    <div class="modal-overlay">
+        <div class="modal-box wide">
+            <div class="modal-header">
+                <h3>Add New Landing Page Section</h3>
+                <button type="button" class="modal-close" @onclick="Close">✕</button>
+            </div>
+            
+            <EditForm Model="RequestModel" OnValidSubmit="Save">
+                <DataAnnotationsValidator />
+                
+                <div class="modal-body">
+                    @if (!string.IsNullOrEmpty(ErrorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            <span>@ErrorMessage</span>
+                        </div>
+                    }
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="title">Title <span class="required">*</span></label>
+                            <InputText id="title" class="form-control" @bind-Value="RequestModel.Title" placeholder="e.g. Meet Our Specialist" />
+                            <ValidationMessage For="@(() => RequestModel.Title)" class="validation-msg" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sectionType">Section Type <span class="required">*</span></label>
+                            <InputSelect id="sectionType" class="form-control" @bind-Value="RequestModel.SectionType">
+                                <option value="Hero">Hero Banner</option>
+                                <option value="About">About Clinic</option>
+                                <option value="DoctorProfile">Doctor Profile</option>
+                                <option value="Treatments">Treatments list</option>
+                                <option value="Video">Video Section</option>
+                                <option value="InfoCard">Info Cards</option>
+                                <option value="General">General / Custom Block</option>
+                            </InputSelect>
+                            <ValidationMessage For="@(() => RequestModel.SectionType)" class="validation-msg" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="displayOrder">Display Order (Sequence)</label>
+                            <InputNumber id="displayOrder" class="form-control" @bind-Value="RequestModel.DisplayOrder" />
+                            <ValidationMessage For="@(() => RequestModel.DisplayOrder)" class="validation-msg" />
+                        </div>
+                    </div>
+
+                    <div class="form-row image-upload-row">
+                        <div class="form-group">
+                            <label for="imageUrl">
+                                @if (RequestModel.SectionType == "Video")
+                                {
+                                    <span>Video Embed URL (YouTube Embed Link)</span>
+                                }
+                                else
+                                {
+                                    <span>Image Path/URL</span>
+                                }
+                            </label>
+                            <div class="input-with-icon">
+                                <span class="input-icon-prefix">@(RequestModel.SectionType == "Video" ? "🎥" : "🖼️")</span>
+                                <InputText id="imageUrl" class="form-control" @bind-Value="RequestModel.ImageUrl" placeholder="@GetImagePlaceholder()" />
+                            </div>
+                            <span class="info-note">
+                                @GetImageHelpText()
+                            </span>
+                            <ValidationMessage For="@(() => RequestModel.ImageUrl)" class="validation-msg" />
+                        </div>
+                    </div>
+
+                    <div class="media-upload-panel">
+                        <div class="upload-action-side">
+                            <label class="btn btn-secondary file-upload-label">
+                                📁 Browse Local Media
+                                <InputFile OnChange="HandleFileSelected" accept=".jpg,.jpeg,.png,.webp,.mp4,.webm" style="display: none;" />
+                            </label>
+                            <span class="upload-tip">Supports .png, .jpg, .webp (max 2MB) or .mp4, .webm (max 75MB)</span>
+                        </div>
+                        <div class="upload-preview-side">
+                            <span class="preview-label">Live Preview</span>
+                            <div class="live-preview-container-box">
+                                @if (!string.IsNullOrEmpty(RequestModel.ImageUrl))
+                                {
+                                    @if (RequestModel.ImageUrl.StartsWith("data:video/") || RequestModel.ImageUrl.EndsWith(".mp4") || RequestModel.ImageUrl.EndsWith(".webm"))
+                                    {
+                                        <video src="@RequestModel.ImageUrl" muted autoplay loop></video>
+                                    }
+                                    else if (RequestModel.SectionType == "Video")
+                                    {
+                                        <div class="preview-video-placeholder">
+                                            <span class="icon">🎥</span>
+                                            <span class="text">Video Embed</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <img src="@RequestModel.ImageUrl" alt="Preview" />
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="preview-placeholder">
+                                        <span class="icon">📁</span>
+                                        <span class="text">No media</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="form-group">
+                        <label for="content">Content <span class="required">*</span></label>
+                        <InputTextArea id="content" class="form-control" rows="5" @bind-Value="RequestModel.Content" placeholder="Enter content (use newlines for formatting lines/features)" />
+                        <ValidationMessage For="@(() => RequestModel.Content)" class="validation-msg" />
+                    </div>
+
+                    <div class="form-group" style="flex-direction: row; gap: 10px; align-items: center; margin-top: 6px;">
+                        <InputCheckbox id="isVisible" @bind-Value="RequestModel.IsVisible" />
+                        <label for="isVisible" style="margin: 0; font-weight: 500; cursor: pointer;">Visible on public home page</label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close" disabled="@IsSaving">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@IsSaving">
+                        @if (IsSaving)
+                        {
+                            <span>Saving...</span>
+                        }
+                        else
+                        {
+                            <span>Save Changes</span>
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}

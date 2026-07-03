@@ -1,0 +1,38 @@
+@inherits LayoutComponentBase
+
+<div class="public-layout-container">
+    <!-- Top Nav -->
+    <header class="public-top-nav">
+        <div class="nav-brand">
+            <span class="logo">🦷</span>
+            <span class="brand-text">Farzana's Dental Care</span>
+        </div>
+        <nav class="nav-links">
+            <a href="" class="nav-link-item">Home</a>
+            <a href="#doctor" class="nav-link-item">Consultant</a>
+            <a href="#services" class="nav-link-item">Services</a>
+            <a href="#about" class="nav-link-item">About</a>
+        </nav>
+        <div class="nav-actions">
+            <AuthorizeView>
+                <Authorized>
+                    <a href="departments" class="btn btn-dashboard">Dashboard</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="login" class="btn btn-login">Login</a>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="public-main-content">
+        @Body
+    </main>
+
+    <!-- Footer -->
+    <footer class="public-footer">
+        <p>&copy; @DateTime.Now.Year Farzana's Dental Care. All rights reserved.</p>
+    </footer>
+</div>

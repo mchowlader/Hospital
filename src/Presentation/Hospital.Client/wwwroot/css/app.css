@@ -1,0 +1,11 @@
+/* ============================================================
+   HOSPITAL MANAGEMENT SYSTEM – MAIN CSS ENTRY POINT
+   This file imports modular stylesheets by device category and
+   purpose to keep styles clean, structured, and easy to maintain.
+   ============================================================ */
+
+@import url('variables.css');
+@import url('base.css');
+@import url('desktop.css');
+@import url('tablet.css');
+@import url('mobile.css');

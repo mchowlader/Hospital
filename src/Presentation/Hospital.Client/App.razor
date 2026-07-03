@@ -1,0 +1,40 @@
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <Authorizing>
+                    <div class="authorizing-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #f8fafc; font-family: 'Outfit', sans-serif;">
+                        <div class="authorizing-card" style="background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); text-align: center;">
+                            <h3>Secure Authorization</h3>
+                            <p style="color: #64748b;">Verifying session and permissions...</p>
+                        </div>
+                    </div>
+                </Authorizing>
+                <NotAuthorized>
+                    <AuthorizeView Context="authContext">
+                        <Authorized>
+                            <div class="access-denied-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; font-family: 'Outfit', sans-serif; padding: 40px 20px;">
+                                <h2 style="font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">Access Denied</h2>
+                                <p style="color: #64748b; font-size: 16px; margin-bottom: 32px;">You do not have the required permissions to view this page. Please contact the administrator.</p>
+                                <a href="" style="background: #0f172a; color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600;">Go Back to Homepage</a>
+                            </div>
+                        </Authorized>
+                        <NotAuthorized>
+                            <RedirectToLogin />
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div class="not-found-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; font-family: 'Outfit', sans-serif; padding: 40px 20px;">
+                    <h2 style="font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 12px;">Page Not Found</h2>
+                    <p style="color: #64748b; font-size: 16px; margin-bottom: 32px;">The page you are looking for does not exist.</p>
+                    <a href="" style="background: #0f172a; color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600;">Go Back to Homepage</a>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

@@ -1,0 +1,173 @@
+@page "/doctors"
+@attribute [Authorize(Policy = "DoctorView")]
+@layout MainLayout
+
+<div class="page-wrapper">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-left">
+            <div class="page-icon">👨‍⚕️</div>
+            <div>
+                <h1 class="page-title">Doctors</h1>
+                <p class="page-subtitle">Manage hospital physicians and specialists</p>
+            </div>
+        </div>
+        <div class="page-header-right">
+            <AuthorizeView Policy="DoctorCreate">
+                <Authorized>
+                    <button class="btn btn-primary" @onclick="OpenAddModal">
+                        <span>＋</span> Add Doctor
+                    </button>
+                </Authorized>
+            </AuthorizeView>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    @if (!string.IsNullOrEmpty(SuccessMessage))
+    {
+        <div class="alert alert-success" @onclick="() => SuccessMessage = null">
+            <span class="alert-icon">✓</span> @SuccessMessage
+        </div>
+    }
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+        <div class="alert alert-danger" @onclick="() => ErrorMessage = null">
+            <span class="alert-icon">✕</span> @ErrorMessage
+        </div>
+    }
+
+    <!-- Toolbar -->
+    <div class="toolbar-row">
+        <div class="filter-group">
+            <div class="stats-chip">
+                <span class="stats-number">@(Doctors?.TotalCount ?? 0)</span>
+                <span class="stats-label">Total Doctors</span>
+            </div>
+            <select class="filter-select" @bind="FilterDepartmentId" @bind:after="OnFilterChanged">
+                <option value="0">All Departments</option>
+                @if (AllDepartments != null)
+                {
+                    @foreach (var dept in AllDepartments)
+                    {
+                        <option value="@dept.Id">@dept.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <div class="search-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input class="search-input" type="text" placeholder="Search by name, email, specialization..."
+                   @bind-value="SearchTerm"
+                   @bind-value:event="oninput"
+                   @onkeyup="OnSearchKeyUp" />
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+        @if (IsLoading)
+        {
+            <div class="loading-overlay">
+                <div class="spinner-ring"></div>
+                <p>Loading doctors...</p>
+            </div>
+        }
+        else if (Doctors == null || Doctors.Items.Count == 0)
+        {
+            <div class="empty-state">
+                <span class="empty-icon">👨‍⚕️</span>
+                <h3>No Doctors Found</h3>
+                <p>@(string.IsNullOrEmpty(SearchTerm) ? "Start by adding your first doctor." : $"No results for \"{SearchTerm}\"")</p>
+                <AuthorizeView Policy="DoctorCreate">
+                    <Authorized>
+                        <button class="btn btn-primary" @onclick="OpenAddModal">＋ Add First Doctor</button>
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Doctor</th>
+                            <th>Specialization</th>
+                            <th>Department</th>
+                            <th>Contact</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int rowNum = (CurrentPage - 1) * PageSize; }
+                        @foreach (var doc in Doctors.Items)
+                        {
+                            rowNum++;
+                            <tr>
+                                <td class="row-num">@rowNum</td>
+                                <td>
+                                    <div class="doctor-cell">
+                                        <div class="doctor-avatar" style="background: @GetAvatarColor(doc.FirstName)">
+                                            @doc.FirstName[0].ToString().ToUpper()
+                                        </div>
+                                        <div>
+                                            <div class="doctor-name">Dr. @doc.FirstName @doc.LastName</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge badge-blue">@doc.Specialization</span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-slate">@doc.DepartmentName</span>
+                                </td>
+                                <td class="contact-cell">
+                                    <div class="contact-item">📧 @doc.Email</div>
+                                    <div class="contact-item">📞 @doc.PhoneNumber</div>
+                                </td>
+                                 <td class="text-right">
+                                    <div class="action-buttons-container">
+                                        <button class="btn-action btn-view" @onclick="() => OpenViewModal(doc)" title="View Details">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        </button>
+                                        <AuthorizeView Policy="DoctorEdit">
+                                            <Authorized>
+                                                <button class="btn-action btn-edit" @onclick="() => OpenEditModal(doc)" title="Edit">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                </button>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                        <AuthorizeView Policy="DoctorDelete">
+                                            <Authorized>
+                                                <button class="btn-action btn-delete" @onclick="() => ConfirmDeleteDoctor(doc)" title="Delete">
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6M14 11v6"></path></svg>
+                                                </button>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <Pagination CurrentPage="@CurrentPage"
+                        PageSize="@PageSize"
+                        TotalCount="@(Doctors?.TotalCount ?? 0)"
+                        OnPageChanged="ChangePage"
+                        OnPageSizeChanged="OnPageSizeChanged" />
+        }
+    </div>
+</div>
+
+<!-- Modal Components -->
+<DoctorCreateModal Show="ShowCreateModal" Departments="AllDepartments" OnClose="CloseCreateModal" OnSuccess="OnCreateSuccess" />
+<DoctorEditModal Show="ShowEditModal" Doctor="SelectedDoctorForEdit" Departments="AllDepartments" OnClose="CloseEditModal" OnSuccess="OnEditSuccess" />
+<DoctorViewModal Show="ShowViewModal" Doctor="SelectedDoctorForView" OnClose="CloseViewModal" OnEditRequested="OnEditRequestedFromView" />
+

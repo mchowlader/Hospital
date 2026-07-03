@@ -1,0 +1,50 @@
+@namespace Hospital.Client.Pages.Departments
+
+@if (Show)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal-box" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Add New Department</h3>
+                <button class="modal-close" @onclick="CloseModal">✕</button>
+            </div>
+            <EditForm Model="FormModel" OnValidSubmit="SaveDepartment">
+                <DataAnnotationsValidator />
+                
+                @if (!string.IsNullOrEmpty(ModalErrorMessage))
+                {
+                    <div class="alert alert-danger">
+                        <span class="alert-icon">✕</span> @ModalErrorMessage
+                    </div>
+                }
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Department Name <span class="required">*</span></label>
+                        <InputText class="form-control" @bind-Value="FormModel.Name" placeholder="e.g. Dentistry, Orthodontics..." />
+                        <ValidationMessage For="() => FormModel.Name" class="validation-msg" />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <InputTextArea class="form-control" rows="3" @bind-Value="FormModel.Description" placeholder="Brief description of the department..." />
+                        <ValidationMessage For="() => FormModel.Description" class="validation-msg" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" @onclick="CloseModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@IsSaving">
+                        @if (IsSaving) 
+                        { 
+                            <span class="btn-spinner"></span> 
+                            <span>Saving...</span> 
+                        }
+                        else 
+                        { 
+                            <span>Create</span> 
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}

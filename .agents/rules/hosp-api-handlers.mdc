@@ -1,0 +1,14 @@
+---
+description: Hospital Management System API endpoint and handler conventions
+globs: src/Presentation/Hospital.Api/**/*.cs
+alwaysApply: false
+---
+
+# API Slice Rules
+
+- Endpoints are thin gateways only — no business logic, DB queries, or mapping in `{Entity}Endpoints.cs`.
+- Implement `IEndpoint` with `MapEndpoint(IEndpointRouteBuilder app)`. Register via assembly scan (`MapAllEndpoints()`), not manual `Program.cs` edits.
+- Use **named delegate methods** for route handlers. No inline lambdas inside `MapEndpoint`.
+- Map handler `Result<T>` to HTTP status codes and RFC 7807 Problem Details via `.ToProblemDetails()`.
+- Each entity slice needs at least 6 endpoints: list/search (GET), get-by-id (GET), export (GET), create (POST), update (PUT), soft-delete (DELETE).
+- Delete handlers set `IsDeleted = true` and save — never physical delete.

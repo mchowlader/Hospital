@@ -1,0 +1,17 @@
+/* ============================================================
+   HOSPITAL MANAGEMENT – TABLET SCREEN STYLES (768px to 1024px)
+   ============================================================ */
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    /* Tablet specific overrides */
+    .content-body {
+        padding: 20px;
+    }
+    
+    /* Responsive grids for tablet cards */
+    .grid-responsive-cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}

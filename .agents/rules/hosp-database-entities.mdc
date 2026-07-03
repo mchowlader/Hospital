@@ -1,0 +1,13 @@
+---
+description: Hospital Management System EF Core entity and configurations conventions
+globs: "{src/Core/Hospital.Domain/**/*.cs,src/Infrastructure/Hospital.Infrastructure/**/*.cs}"
+alwaysApply: false
+---
+
+# Database & Entity Rules
+
+- All entities inherit `BaseEntity` (`long Id`, audit fields, `IsActive`, `IsDeleted`).
+- Fluent API configurations live in `Persistence/Configurations/{Entity}Configuration.cs` — not inline in `OnModelCreating`.
+- Unique indexes on soft-deleted entities must be partial: `.HasFilter("\"IsDeleted\" = false")` (for PostgreSQL).
+- Read queries: use `.AsNoTracking()` and project with `.Select()` — avoid loading full entities when not needed.
+- Global query filters exclude `IsDeleted == true` records by default.

@@ -1,0 +1,70 @@
+@namespace Hospital.Client.Pages.DepartmentTerms
+@using Hospital.Shared.DTOs.Departments
+
+@if (Show && Term != null)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal-box" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Edit Treatment Term</h3>
+                <button class="modal-close" @onclick="CloseModal">✕</button>
+            </div>
+            <EditForm Model="FormModel" OnValidSubmit="SaveTerm">
+                <DataAnnotationsValidator />
+                
+                @if (!string.IsNullOrEmpty(ModalErrorMessage))
+                {
+                    <div class="alert alert-danger">
+                        <span class="alert-icon">✕</span> @ModalErrorMessage
+                    </div>
+                }
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Department <span class="required">*</span></label>
+                        <InputSelect class="form-control" @bind-Value="FormModel.DepartmentId">
+                            <option value="0">Select department...</option>
+                            @if (Departments != null)
+                            {
+                                @foreach (var dept in Departments)
+                                {
+                                    <option value="@dept.Id">@dept.Name</option>
+                                }
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => FormModel.DepartmentId" class="validation-msg" />
+                    </div>
+                    <div class="form-group">
+                        <label>Treatment Name <span class="required">*</span></label>
+                        <InputText class="form-control" @bind-Value="FormModel.Name" placeholder="e.g. Root Canal, Teeth Cleaning..." />
+                        <ValidationMessage For="() => FormModel.Name" class="validation-msg" />
+                    </div>
+                    <div class="form-group">
+                        <label>Base Cost (৳)</label>
+                        <InputNumber class="form-control" @bind-Value="FormModel.BaseCost" placeholder="0.00" />
+                        <ValidationMessage For="() => FormModel.BaseCost" class="validation-msg" />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <InputTextArea class="form-control" rows="3" @bind-Value="FormModel.Description" placeholder="Brief description..." />
+                        <ValidationMessage For="() => FormModel.Description" class="validation-msg" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" @onclick="CloseModal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" disabled="@IsSaving">
+                        @if (IsSaving) 
+                        { 
+                            <span class="btn-spinner"></span> 
+                            <span>Saving...</span> 
+                        }
+                        else 
+                        { 
+                            <span>Update</span> 
+                        }
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}

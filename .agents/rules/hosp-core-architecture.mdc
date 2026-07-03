@@ -1,0 +1,14 @@
+---
+description: Hospital Management System core Clean Slice architecture — always apply
+alwaysApply: true
+---
+
+# Hospital Core Architecture Rules
+
+- **Clean Slice Architecture:** Vertical feature folders (Endpoint → Handler → Validator). No MediatR. No AutoMapper.
+- **Result pattern:** Handlers return `Result` / `Result<T>`. Never throw for NotFound, Validation, or Conflict.
+- **Soft delete only:** Set `IsDeleted = true` and save. Never call EF Core `Remove()` / `RemoveRange()`.
+- **IDs:** All entity primary keys are `long` (PostgreSQL `bigint`). Inherit from `BaseEntity` which contains metadata (CreatedAt, CreatedBy, UpdatedAt, UpdatedBy, IsActive, IsDeleted).
+- **Dependency flow:** `Api → Infrastructure → Shared → Domain`. Handlers in API slices may inject `AppDbContext` directly.
+- **Permissions:** Protect routes with `.RequirePermission("{Entity}.{Action}")`. Permissions are lowercase entity.action strings.
+- **Scope:** Minimize diff size. Match existing conventions in surrounding code before introducing new patterns.

@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/Hospital.Domain/Hospital.Domain.csproj" />
+    <Project Path="src/Core/Hospital.Shared/Hospital.Shared.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="src/Infrastructure/Hospital.Infrastructure/Hospital.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/">
+    <Project Path="src/Presentation/Hospital.Api/Hospital.Api.csproj" />
+    <Project Path="src/Presentation/Hospital.Client/Hospital.Client.csproj" />
+  </Folder>
+</Solution>

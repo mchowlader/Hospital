@@ -1,0 +1,68 @@
+@page "/cms/landing-page"
+@attribute [Authorize(Policy = "LandingPageSectionView")]
+
+<div class="cms-page">
+    <div class="cms-header">
+        <div>
+            <h2>Manage Landing Page Sections</h2>
+            <p class="subtitle">Add, edit, reorder or hide sections on the public home page.</p>
+        </div>
+        <button class="btn btn-primary" @onclick="OpenAddModal">
+            <span class="btn-icon">＋</span> Add Section
+        </button>
+    </div>
+
+    @if (Sections == null)
+    {
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <p>Loading sections...</p>
+        </div>
+    }
+    else
+    {
+        @if (!string.IsNullOrEmpty(SuccessMessage))
+        {
+            <div class="alert alert-success">
+                <span>@SuccessMessage</span>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                <span>@ErrorMessage</span>
+            </div>
+        }
+
+        <div class="sections-list">
+            @foreach (var section in Sections)
+            {
+                <div class="section-card @(section.IsVisible ? "" : "section-hidden")">
+                    <div class="section-drag-handle">
+                        <span class="order-badge">#@section.DisplayOrder</span>
+                    </div>
+                    <div class="section-info">
+                        <div class="section-meta">
+                            <span class="type-badge @section.SectionType.ToLower()">@section.SectionType</span>
+                            @if (!section.IsVisible)
+                            {
+                                <span class="hidden-badge">Hidden</span>
+                            }
+                        </div>
+                        <h3 class="section-title">@section.Title</h3>
+                        <p class="section-excerpt">@GetExcerpt(section.Content)</p>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn-action edit" @onclick="() => OpenEditModal(section)">Edit</button>
+                        <button class="btn-action delete" @onclick="() => ConfirmDelete(section.Id)">Delete</button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <LandingPageSectionCreateModal Show="ShowCreateModal" NextDisplayOrder="@((Sections?.Count ?? 0) + 1)" OnClose="CloseCreateModal" OnSaved="OnSectionSaved" />
+    <LandingPageSectionEditModal Show="ShowEditModal" Section="SelectedSection" OnClose="CloseEditModal" OnSaved="OnSectionSaved" />
+</div>
+
