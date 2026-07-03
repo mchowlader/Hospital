@@ -472,6 +472,15 @@ a:hover {
     max-width: 680px;
 }
 
+.modal-box form {
+    display: flex;
+    flex-direction: column;
+    max-height: calc(90vh - 70px);
+    overflow: hidden;
+    flex: 1;
+}
+
+
 .modal-header {
     display: flex;
     align-items: center;
