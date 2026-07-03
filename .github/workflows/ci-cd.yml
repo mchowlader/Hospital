@@ -1,26 +1,58 @@
-name: .NET CI/CD
+name: Deploy Pre-Production
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Setup .NET
+
+    - name: Setup .NET SDK
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.0.x
-        
+
     - name: Restore dependencies
       run: dotnet restore Hospital.slnx
-      
-    - name: Build
-      run: dotnet build Hospital.slnx --no-restore --configuration Release
+
+    - name: Publish API
+      run: dotnet publish src/Presentation/Hospital.Api/Hospital.Api.csproj -c Release -o ./publish-api --no-restore
+
+    - name: Publish UI (Blazor WASM)
+      run: dotnet publish src/Presentation/Hospital.Client/Hospital.Client.csproj -c Release -o ./publish-ui --no-restore
+
+    # Deploy API files to Server
+    - name: Deploy API via SCP
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "publish-api/**"
+        target: "/var/www/hospitalapp-api-preprod"
+        strip_components: 1
+
+    # Deploy UI files to Server
+    - name: Deploy UI via SCP
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "publish-ui/wwwroot/**"
+        target: "/var/www/hospitalapp-ui-preprod"
+        strip_components: 1
+
+    # Restart API Service via SSH
+    - name: Restart Service via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          sudo systemctl restart hospitalapp-api-preprod.service
