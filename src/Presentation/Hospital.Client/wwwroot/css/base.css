@@ -466,6 +466,7 @@ a:hover {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative; /* Relative position for loading overlay absolute pinning */
 }
 
 .modal-box.wide {
@@ -479,6 +480,39 @@ a:hover {
     overflow: hidden;
     flex: 1;
 }
+
+/* Modal Loading Overlay & Spinner */
+.modal-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.spinner-premium {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #ccfbf1;
+    border-top: 4px solid #0d9488;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f766e;
+    margin: 0;
+}
+
 
 
 .modal-header {

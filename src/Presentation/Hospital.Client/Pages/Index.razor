@@ -120,19 +120,19 @@
                             <h2>@section.Title</h2>
                             <p>@section.Content</p>
                         </div>
-                        <div class="video-player-wrapper">
-                            @if (!string.IsNullOrEmpty(section.ImageUrl))
+                        @if (!string.IsNullOrEmpty(section.ImageUrl))
+                        {
+                            @if (section.ImageUrl.StartsWith("data:video/") || section.ImageUrl.EndsWith(".mp4") || section.ImageUrl.EndsWith(".webm"))
                             {
-                                @if (section.ImageUrl.StartsWith("data:video/") || section.ImageUrl.EndsWith(".mp4") || section.ImageUrl.EndsWith(".webm"))
-                                {
-                                    <div class="responsive-video-local">
-                                        <video src="@section.ImageUrl" controls class="local-video-player">
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    </div>
-                                }
-                                else
-                                {
+                                <div class="video-player-wrapper reels-format">
+                                    <video src="@section.ImageUrl" controls class="local-video-player">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="video-player-wrapper landscape-format">
                                     <div class="responsive-video">
                                         <iframe src="@section.ImageUrl" 
                                                 title="Clinic Presentation Video" 
@@ -141,16 +141,18 @@
                                                 allowfullscreen>
                                         </iframe>
                                     </div>
-                                }
+                                </div>
                             }
-                            else
-                            {
+                        }
+                        else
+                        {
+                            <div class="video-player-wrapper landscape-format">
                                 <div class="video-placeholder">
                                     <span class="play-icon">▶</span>
                                     <p>No video URL configured</p>
                                 </div>
-                            }
-                        </div>
+                            </div>
+                        }
 
                     </div>
                 </section>

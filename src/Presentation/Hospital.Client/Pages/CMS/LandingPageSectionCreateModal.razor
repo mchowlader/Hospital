@@ -4,6 +4,14 @@
 {
     <div class="modal-overlay">
         <div class="modal-box wide">
+            @if (IsSaving)
+            {
+                <div class="modal-loading-overlay">
+                    <div class="spinner-premium"></div>
+                    <p class="loading-text">Saving and uploading media... Please wait.</p>
+                </div>
+            }
+            
             <div class="modal-header">
                 <h3>Add New Landing Page Section</h3>
                 <button type="button" class="modal-close" @onclick="Close">✕</button>
