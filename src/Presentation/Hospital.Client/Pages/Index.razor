@@ -114,7 +114,13 @@
             else if (section.SectionType == "Video")
             {
                 <section class="section-video">
-                    <div class="video-container">
+                    @{
+                        var isReels = !string.IsNullOrEmpty(section.ImageUrl) && 
+                                     (section.ImageUrl.StartsWith("data:video/") || 
+                                      section.ImageUrl.EndsWith(".mp4") || 
+                                      section.ImageUrl.EndsWith(".webm"));
+                    }
+                    <div class="video-container @(isReels ? "reels-layout" : "stacked-layout")">
                         <div class="video-info">
                             <div class="badge-tag">Advanced Facility</div>
                             <h2>@section.Title</h2>
